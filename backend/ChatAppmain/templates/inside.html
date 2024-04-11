@@ -11,7 +11,7 @@ Hi {{ user.username }}!
 </form>
 
 <div class="chat__item__container" id="id_chat_item_container" style="font-size: 20px">
-  {% if messages %}
+{% if messages %}
   {% for message in messages %}
     {{ message.user.username }}: {{ message.content }}
     <br/>
@@ -32,6 +32,7 @@ Hi {{ user.username }}!
 <script>
   const roomSlug = JSON.parse(document.getElementById('room_slug').textContent);
   const roomName = JSON.parse(document.getElementById('room_name').textContent);
+  console.log("Debug: Parsed Room Name: " + roomName);
   const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/" + roomSlug + "/");
   
   // WebSocket event listeners
@@ -50,9 +51,10 @@ Hi {{ user.username }}!
   document.querySelector("#id_message_send_button").onclick = function (e) {
     var messageInput = document.querySelector("#id_message_send_input").value.trim(); // Trim to remove whitespace
     if (messageInput !== "") { // Check if message is not empty
-      chatSocket.send(JSON.stringify({ message: messageInput, username: "{{ request.user.username }}", room_name }));
+        chatSocket.send(JSON.stringify({ message: messageInput, username: "{{ request.user.username }}", room_name: roomName }));
     }
-  };
+};
+
   
   chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
